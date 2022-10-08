@@ -1,12 +1,12 @@
 ;; A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
-;; Find the largest palindrome made from the product of two n-digit numbers.
+;; Find the largest palindrome made from the product of two 3-digit numbers.
 
 (defn n-digit-nums
   [n]
   (range (dec (int (Math/pow 10 n)))
          (int (dec (Math/pow 10 (dec n))))
          -1))
-(n-digit-nums 1)
+(n-digit-nums 2)
 (defn perm-two-vecs
   [vec1 vec2]
   (for [x vec1
@@ -28,4 +28,4 @@
   (filter palindrome? (perm-two-vecs (n-digit-nums n)
                                      (n-digit-nums n))))
 
-(get-n-digits-palindrome 3)
+(reverse (sort (get-n-digits-palindrome 3)))
