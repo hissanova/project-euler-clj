@@ -17,6 +17,8 @@
 
 (defn count-exp
   [target prime & {:keys [exp] :or {exp 0}}]
+  (if (<= target 0)
+    (throw (Exception. (format "Invalid value: %d" target))))
   (if (divides? target prime)
     (count-exp (Math/divideExact target prime) prime :exp (inc exp))
     exp))
@@ -29,8 +31,11 @@
   [factors]
   (bigint (reduce * (map #(Math/pow (:factor %) (:exp %)) factors))))
 
+
 (defn prime-factor
   [target]
+  (if (>= 0 target)
+    (throw (Exception. (format "prime factors cannot be evaluated for %d" target))))
   (let [limit (bigint (Math/sqrt target))]
     (loop [prime-factors (let [exp (count-exp target 2)]
                              (if (> exp 0)
