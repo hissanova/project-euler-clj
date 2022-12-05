@@ -11,6 +11,8 @@
                primes)
              (+ candidate 2)))))
 
+(def parseInt #(Integer/parseInt %))
+
 (defn divides?
   [a b]
   (= (mod a b) 0))
