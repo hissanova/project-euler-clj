@@ -7,21 +7,12 @@
   (:require [project-euler-clj.common :as common])
   (:require [clojure.string :as st]))
 
-(defn factorial
-  ([n]
-   (if (< n 0)
-     (throw (Exception. (format "Invalid argument %d" n))))
-   (factorial n 1))
-  ([n prod]
-   (if (or (= n 0) (= n 1))
-     prod
-     (recur (dec n) (* n prod)))))
 
 (defn combination
   [n r]
   (if (or (< n 0) (< r 0) (< n r))
     (throw (Exception. (format "Invalid arguments n=%d, r=%d" n r))))
-  (bigint (/ (factorial n)
-             (* (factorial (- n r)) (factorial r)))))
+  (bigint (/ (common/factorial n)
+             (* (common/factorial (- n r)) (common/factorial r)))))
 
 (combination 40N 20)

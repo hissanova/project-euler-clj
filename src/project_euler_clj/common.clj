@@ -1,5 +1,15 @@
 (ns project-euler-clj.common)
-  
+
+(defn factorial
+  ([n]
+   (if (< n 0)
+     (throw (Exception. (format "Invalid argument %d" n))))
+   (factorial n 1))
+  ([n prod]
+   (if (or (= n 0) (= n 1))
+     prod
+     (recur (dec n) (* n prod)))))
+
 (defn get-primes-upto
   [limit]
   (loop [primes [2]
