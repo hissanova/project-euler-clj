@@ -95,17 +95,10 @@
 ;; (defn look-for-max-path
 ;;   [triangle]
 ;;   (loop []))
-(defn product
-  [xs]
-  (if (= (count xs) 1)
-    (map vector (first xs))
-    (apply concat (map (fn [e] (map (fn [y] (concat [e] y))
-                               (product (rest xs))))
-                  (first xs)))))
 
 (defn path-seeds
   [length]
-  (product (repeat length [0 1])))
+  (common/product (repeat length [0 1])))
 
 (defn render-path
   [path-seed]

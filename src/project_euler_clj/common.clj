@@ -1,5 +1,13 @@
 (ns project-euler-clj.common)
 
+(defn product
+  [xs]
+  (if (= (count xs) 1)
+    (map vector (first xs))
+    (apply concat (map (fn [e] (map (fn [y] (concat [e] y))
+                                    (product (rest xs))))
+                       (first xs)))))
+
 (defn factorial
   ([n]
    (if (< n 0)
@@ -32,7 +40,7 @@
   (if (<= target 0)
     (throw (Exception. (format "Invalid value: %d" target))))
   (if (divides? target prime)
-    (count-exp (Math/divideExact target prime) prime :exp (inc exp))
+    (count-exp (Math/divideExact (int target) (int prime)) prime :exp (inc exp))
     exp))
 
 (defn not-divisible-by?
@@ -49,11 +57,11 @@
   (if (>= 0 target)
     (throw (Exception. (format "prime factors cannot be evaluated for %d" target))))
   (let [limit (bigint (Math/sqrt target))]
-    (loop [prime-factors (let [exp (count-exp target 2)]
+    (loop [prime-factors (let [exp (count-exp target 2N)]
                              (if (> exp 0)
-                               [{:factor 2 :exp exp}]
+                               [{:factor 2N :exp exp}]
                                []))
-           candidate 3]
+           candidate 3N]
       (if (> candidate limit)
         (let [result (construct-from-factors prime-factors)]
           (if (= target result)
@@ -65,6 +73,6 @@
                      (conj prime-factors
                            {:factor candidate :exp exp})
                      prime-factors))
-                 (+ candidate 2))
-          (recur prime-factors (+ candidate 2)))))))
+                 (+ candidate 2N))
+          (recur prime-factors (+ candidate 2N)))))))
 
