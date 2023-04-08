@@ -8,6 +8,7 @@
                                     (product (rest xs))))
                        (first xs)))))
 
+
 (defn factorial
   ([n]
    (if (< n 0)
@@ -76,3 +77,21 @@
                  (+ candidate 2N))
           (recur prime-factors (+ candidate 2N)))))))
 
+(defn get-powers-of-prime-factors [n]
+  (for [fac-exp (prime-factor n)]
+    (map #(int (Math/pow (:factor fac-exp) %1))
+         (range (inc (:exp fac-exp))))))
+
+(defn get-proper-divisors [n]
+  (filter (fn [x] (> n x)) (map #(reduce * %1) (product (get-powers-of-prime-factors n)))))
+
+(defn sum-proper-divisors [n]
+  (reduce + (get-proper-divisors n)))
+
+(defn is-amicable? [n]
+  (let [sum (sum-proper-divisors n)]
+    (if (= n (sum-proper-divisors sum))
+      (list n sum))))
+
+(defn is-abundant-number? [n]
+  (< n (sum-proper-divisors n)))

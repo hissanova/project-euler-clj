@@ -11,22 +11,5 @@
   (:require [project-euler-clj.common :as common])
   (:require [clojure.string :as st]))
 
-
-(defn get-lists-of-prime-powers [n]
-  (for [fac-exp (common/prime-factor n)]
-    (map #(int (Math/pow (:factor fac-exp) %1))
-         (range (inc (:exp fac-exp))))))
-
-(defn get-proper-divisors [n]
-  (filter (fn [x] (> n x)) (map #(reduce * %1) (common/product (get-lists-of-prime-powers n)))))
-
-(defn sum-proper-divisors [n]
-  (reduce + (get-proper-divisors n)))
-
-(defn is-amicable? [n]
-  (let [sum (sum-proper-divisors n)]
-    (if (= n (sum-proper-divisors sum))
-      (list n sum))))
-
 (defn solve []
-  (reduce + (set (flatten (filter (fn [[x y]] (not= x y)) (filter not-empty (map #(is-amicable? %1) (range 2 10000))))))))
+  (reduce + (set (flatten (filter (fn [[x y]] (not= x y)) (filter not-empty (map #(common/is-amicable? %1) (range 2 10000))))))))
