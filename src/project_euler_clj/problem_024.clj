@@ -10,14 +10,6 @@
   (:require [clojure.string :as st]))
 
 
-(defn remove-appropriate-num
-  [num-list target]
-  (loop [prec-nums ()
-         candidate (head num-list)
-         next-num (head (rest num-list))
-         succ-nums (rest num-list)]
-    (if (and (< ())))))
-
 (def target (int 1e6))
 
 (def memo-factorial (memoize (fn [n] (common/factorial n))))
@@ -44,9 +36,31 @@
         (recur (remove #{digit} source-digits)
                (dec num-remains)
                (+ current-pos (* index (memo-factorial num-remains)))
-               (conj solution digit))
-        ))))
+               (conj solution digit))))))
 
+(defn get-the-list2
+  []
+  (loop [source-digits (range 10)
+         remainder (int 1e6)
+         solution []]
+    (println source-digits remainder solution)
+    (if (= (count source-digits) 0)
+      solution
+      (let [sublen (dec (count source-digits))
+            quotient (quot remainder (memo-factorial sublen))
+            new-rem (rem remainder (memo-factorial sublen))
+            index  (if (= new-rem 0)
+                     (dec quotient)
+                     quotient)
+            digit (nth source-digits index)]
+        (recur (remove #{digit} source-digits)
+               (if (= new-rem 0)
+                 (memo-factorial sublen)
+                 new-rem)
+               (conj solution digit))))))
+
+(get-the-list)
+(get-the-list2)
 (defn solve []
   (reduce + (map (fn [[i d]]  (* d (int (Math/pow 10 i))))
                  (map-indexed vector (reverse (get-the-list))))))
