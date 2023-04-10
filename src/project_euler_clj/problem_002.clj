@@ -2,15 +2,9 @@
 ;; 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...
 ;; By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.
 
-(defn generate-fibo
-  ""
-  [limit]
-  (loop [fibo-seq [1 2]
-         new-term (reduce + (take-last 2 fibo-seq))]
-    (if (> new-term limit)
-      fibo-seq
-      (recur (conj fibo-seq new-term)
-             (+ (last fibo-seq) new-term)))))
+(ns project-euler-clj.problem-002
+  (:require [project-euler-clj.common :as common]))
 
-(println (generate-fibo 4000000))
-(reduce + (filter even? (generate-fibo 4000000)))
+
+(println (common/fibonacci-seq 4000000))
+(reduce + (filter even? (common/fibonacci-seq 4000000)))

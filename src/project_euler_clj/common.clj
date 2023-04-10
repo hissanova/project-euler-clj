@@ -8,6 +8,29 @@
                                     (product (rest xs))))
                        (first xs)))))
 
+(defn get-exceeds?-func
+  [sup]
+  (fn [n] (and sup (>= n sup))))
+
+(defn lazy-fibonacci-seq
+  ([] (lazy-fibonacci-seq [1N 1N]))
+  ([[n-2 n-1]] (cons n-2 (lazy-seq (lazy-fibonacci-seq [n-1 (+ n-2 n-1)])))))
+
+(take 5 (lazy-fibonacci-seq))
+
+(defn fibonacci-seq
+  ""
+  [& {limit :limit upto :upto-nth
+        :or {limit nil upto nil}}]
+  (let [exceeds-limit? (get-exceeds?-func limit)
+        exceeds-nth? (get-exceeds?-func upto)]
+    (loop [fibo-seq [1 1]
+           new-term (reduce + (take-last 2 fibo-seq))]
+      (if (or (exceeds-limit? new-term)
+              (exceeds-nth? (count fibo-seq)))
+        fibo-seq
+        (recur (conj fibo-seq new-term)
+               (+ (last fibo-seq) new-term))))))
 
 (defn factorial
   ([n]
