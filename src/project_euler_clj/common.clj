@@ -53,6 +53,8 @@
                primes)
              (+ candidate 2)))))
 
+(def memo-primes-upto (memoize get-primes-upto))
+
 (def parseInt #(Integer/parseInt %))
 
 (defn divides?
