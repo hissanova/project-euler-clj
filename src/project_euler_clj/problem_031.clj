@@ -19,23 +19,28 @@
 
 (def coin-values [200 100 50 20 10 5 2 1])
 
+(defn accumulate-value
+  [value upto]
+  (range 0 (inc upto) value))
+
 (defn- enumerate-possible-configs-recur
   [total-amount coins coin-values]
   (if (= 1 (count coin-values))
     (let [coin-val (last coin-values)
           max-coins (get-max-coins total-amount coin-val)]
-      (conj coins
-            {coin-val max-coins}
-            {:remain (mod total-amount coin-val)}))
-    (let [current-coin (first coin-values)
-          values (reverse (map-indexed vector (range 0 (inc total-amount) current-coin)))]
-      (for [[coin-num current-value] values]
-        (let [coin-nums  (conj coins {current-coin coin-num})]
+      (assoc coins
+             coin-val max-coins
+             :remain (mod total-amount coin-val)))
+    (let [current-coin (first coin-values)]
+      (for [[coin-num current-value] (reverse (map-indexed vector
+                                                           (accumulate-value total-amount
+                                                                             current-coin)))]
+        (let [coin-nums  (assoc coins current-coin coin-num)]
           (if (= total-amount current-value)
-            (conj coin-nums {:remain 0})
+            (assoc coin-nums :remain 0)
             (enumerate-possible-configs-recur (- total-amount current-value)
-                                        coin-nums
-                                        (rest coin-values))))))))
+                                              coin-nums
+                                              (rest coin-values))))))))
 
 (defn enumerate-possible-configs
   [total-amount coins coin-values]
