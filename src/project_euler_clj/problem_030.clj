@@ -11,39 +11,11 @@
   (:require [project-euler-clj.common :as common])
   (:require [clojure.string :as st]))
 
-(defn- add-new-digit
-  [rep new-digit]
-  (conj rep {:body (conj (:body rep) new-digit)}))
 
-
-(defn num-to-digits
-  [n]
-  (loop [current-num n
-         digit-rep {:base 10 :body []}
-         max-exp (int (Math/log10 current-num))
-         ]
-    (if (= current-num 0)
-      (add-new-digit digit-rep {:digit 0 :pow max-exp})
-      (if (= 0 max-exp)
-        (add-new-digit digit-rep {:digit current-num :pow 0})
-        (let [current-power (int (Math/pow 10 max-exp))]
-          (recur
-           (mod current-num current-power)
-           (add-new-digit digit-rep {:digit (quot current-num current-power)
-                                     :pow max-exp})
-           (dec max-exp)))))))
-
-(defn digits-to-number
-  [digits-rep]
-  (reduce + (map #(int (* (:digit %1)
-                          (Math/pow (:base digits-rep)
-                                    (:pow %1))))
-                 (:body digits-rep))))
-
-(defn get-max-num-of-digits
+(defn- get-max-num-of-digits
   [power]
-  (first (reverse (take-while #(> (* %1 (Math/pow 9 power))
-                                  (Math/pow 10 (dec %1)))
+  (first (reverse (take-while #(> (* % (Math/pow 9 power))
+                                  (Math/pow 10 (dec %)))
                               (range 1 100)))))
 
 (defn gen-n-digits-nums
@@ -54,7 +26,7 @@
 (defn sum-of-digits-kth-pow
   [n k]
   (reduce + (map (fn [x] (int (Math/pow (:digit x) k)))
-                 (:body (num-to-digits n)))))
+                 (:body (common/num-to-digits n)))))
 
 (defn solve [kth-power]
   (reduce + (filter (fn [n] (= n (sum-of-digits-kth-pow n kth-power)))

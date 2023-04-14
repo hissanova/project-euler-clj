@@ -1,5 +1,31 @@
 (ns project-euler-clj.common)
 
+(defn- add-new-digit
+  [rep new-digit]
+  (update rep :body #(conj % new-digit)))
+
+(defn num-to-digits
+  [n]
+  (loop [current-num n
+         digit-rep {:base 10 :body []}
+         max-exp (int (Math/log10 current-num))
+         ]
+    (if (= 0 max-exp)
+      (add-new-digit digit-rep {:digit current-num :pow 0})
+      (let [current-power (int (Math/pow 10 max-exp))]
+        (recur
+         (mod current-num current-power)
+         (add-new-digit digit-rep {:digit (quot current-num current-power)
+                                   :pow max-exp})
+         (dec max-exp))))))
+
+(defn digits-to-number
+  [digits-rep]
+  (reduce + (map #(int (* (% :digit)
+                          (Math/pow (digits-rep :base)
+                                    (% :pow))))
+                 (digits-rep :body))))
+
 (defn product
   [xs]
   (if (= (count xs) 1)
@@ -75,7 +101,7 @@
 
 (defn construct-from-factors
   [factors]
-  (bigint (reduce * (map #(Math/pow (:factor %) (:exp %)) factors))))
+  (bigint (reduce * (map #(Math/pow (% :factor) (% :exp)) factors))))
 
 
 (defn prime-factor
@@ -104,11 +130,11 @@
 
 (defn get-powers-of-prime-factors [n]
   (for [fac-exp (prime-factor n)]
-    (map #(int (Math/pow (:factor fac-exp) %1))
-         (range (inc (:exp fac-exp))))))
+    (map #(int (Math/pow (fac-exp :factor) %))
+         (range (inc (fac-exp :exp))))))
 
 (defn get-proper-divisors [n]
-  (filter (fn [x] (> n x)) (map #(reduce * %1) (product (get-powers-of-prime-factors n)))))
+  (filter (fn [x] (> n x)) (map #(reduce * %) (product (get-powers-of-prime-factors n)))))
 
 (defn sum-proper-divisors [n]
   (reduce + (get-proper-divisors n)))
