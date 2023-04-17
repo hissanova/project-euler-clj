@@ -1,5 +1,10 @@
 (ns project-euler-clj.common)
 
+(defn gen-n-digits-nums
+  [n]
+  (range (int (Math/pow 10 (dec n)))
+         (int (Math/pow 10 n))))
+
 (defn- add-new-digit
   [rep new-digit]
   (update rep :body #(conj % new-digit)))
@@ -19,12 +24,21 @@
                                    :pow max-exp})
          (dec max-exp))))))
 
+(defn num-to-digit-seq
+  [n]
+  (map :digit (:body (num-to-digits n))))
+
 (defn digits-to-number
   [digits-rep]
   (reduce + (map #(int (* (% :digit)
                           (Math/pow (digits-rep :base)
                                     (% :pow))))
                  (digits-rep :body))))
+
+(defn digit-seq-to-num
+  [digits-seq]
+  (reduce + (map (fn [[p d]] (* d (int (Math/pow 10 p))))
+                 (map-indexed vector (reverse digits-seq)))))
 
 (defn product
   [xs]

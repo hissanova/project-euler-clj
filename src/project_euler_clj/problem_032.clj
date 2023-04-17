@@ -38,11 +38,6 @@
 (count digit-pairs)
 (def candidates (combo/permuted-combinations (range 1 10) 5))
 
-(defn digits-seq-to-num
-  [digits-seq]
-  (reduce + (map (fn [[p d]] (* d (int (Math/pow 10 p))))
-                 (map-indexed vector (reverse digits-seq)))))
-
 (defn- produce-candidate-pair-part
   [five-digits]
   (let [candidates [(split-at 2 five-digits)]]
@@ -53,7 +48,7 @@
 
 (defn criterion
   [[a b]]
-  (let [c (apply * (map digits-seq-to-num [a b]))]
+  (let [c (apply * (map common/digit-seq-to-num [a b]))]
     (when (= 4 (int (Math/ceil (Math/log10 c))))
       (let [c-digits (remove #{0} (map :digit ((common/num-to-digits c) :body)))]
         (when (= 9 (count (set (concat a b c-digits))))
@@ -69,5 +64,5 @@
                                      candidates)))
 
 (defn solve []
-  (reduce + (set (map #(digits-seq-to-num (nth % 2))
+  (reduce + (set (map #(common/digit-seq-to-num (nth % 2))
                       pandigital-triples))))

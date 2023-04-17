@@ -18,11 +18,6 @@
                                   (Math/pow 10 (dec %)))
                               (range 1 100)))))
 
-(defn gen-n-digits-nums
-  [n]
-  (range (int (Math/pow 10 (dec n)))
-         (int (Math/pow 10 n))))
-
 (defn sum-of-digits-kth-pow
   [n k]
   (reduce + (map (fn [x] (int (Math/pow (:digit x) k)))
@@ -30,5 +25,5 @@
 
 (defn solve [kth-power]
   (reduce + (filter (fn [n] (= n (sum-of-digits-kth-pow n kth-power)))
-                    (flatten (map gen-n-digits-nums
+                    (flatten (map common/gen-n-digits-nums
                                   (range 2 (inc (get-max-num-of-digits kth-power))))))))
