@@ -9,24 +9,35 @@
   [rep new-digit]
   (update rep :body #(conj % new-digit)))
 
-(defn num-to-digits
+(defn logn
   [n]
-  (loop [current-num n
-         digit-rep {:base 10 :body []}
-         max-exp (int (Math/log10 current-num))
-         ]
-    (if (= 0 max-exp)
-      (add-new-digit digit-rep {:digit current-num :pow 0})
-      (let [current-power (int (Math/pow 10 max-exp))]
-        (recur
-         (mod current-num current-power)
-         (add-new-digit digit-rep {:digit (quot current-num current-power)
-                                   :pow max-exp})
-         (dec max-exp))))))
+  (if (>= 0 n)
+    (throw (Exception. (format "No support for the base %d" n)))
+      (if (= 10 n)
+        (fn [x] (Math/log10 x))
+        (fn [x] (/ (Math/log x)
+                   (Math/log n))))))
+
+(defn num-to-digits
+  ([n] (num-to-digits n 10))
+  ([n base]
+   (loop [current-num n
+          digit-rep {:base base :body []}
+          max-exp (if (= 0 current-num) current-num
+                      (int ((logn base) current-num)))]
+     (if (= 0 max-exp)
+       (add-new-digit digit-rep {:digit current-num :pow 0})
+       (let [current-power (int (Math/pow base max-exp))]
+         (recur
+          (mod current-num current-power)
+          (add-new-digit digit-rep {:digit (quot current-num current-power)
+                                    :pow max-exp})
+          (dec max-exp)))))))
 
 (defn num-to-digit-seq
-  [n]
-  (map :digit (:body (num-to-digits n))))
+  ([n] (num-to-digit-seq n 10))
+  ([n base]
+   (map :digit (:body (num-to-digits n base)))))
 
 (defn digits-to-number
   [digits-rep]
@@ -37,7 +48,7 @@
 
 (defn digit-seq-to-num
   [digits-seq]
-  (reduce + (map (fn [[p d]] (* d (int (Math/pow 10 p))))
+  (reduce + (map (fn [[p d]] (* d (bigint (Math/pow 10 p))))
                  (map-indexed vector (reverse digits-seq)))))
 
 (defn product
@@ -95,6 +106,24 @@
 
 (def memo-primes-upto (memoize get-primes-upto))
 
+(defn get-prime-table
+  []
+  (slurp "prime_table.txt"))
+
+(defn get-primes-upto!
+  [limit]
+  (let [prime-table (get-prime-table)
+        candidate (inc (last prime-table))]
+    (loop [primes prime-table
+           candidate 3]
+      (if (> candidate limit)
+        primes
+        (recur (if (every? #(not= (mod candidate %) 0) (filter #(<= % (Math/sqrt candidate)) primes))
+                 (conj primes candidate)
+                 primes)
+               (+ candidate 2))))))
+
+
 (def parseInt #(Integer/parseInt %))
 
 (defn divides?
@@ -106,7 +135,7 @@
   (if (<= target 0)
     (throw (Exception. (format "Invalid value: %d" target))))
   (if (divides? target prime)
-    (count-exp (Math/divideExact (int target) (int prime)) prime :exp (inc exp))
+    (count-exp (quot (bigint target) (bigint prime)) prime :exp (inc exp))
     exp))
 
 (defn not-divisible-by?
@@ -146,6 +175,12 @@
   (for [fac-exp (prime-factor n)]
     (map #(int (Math/pow (fac-exp :factor) %))
          (range (inc (fac-exp :exp))))))
+
+(def memo-prime-factor (memoize prime-factor))
+
+(defn is-prime?
+  [n]
+  (= 1 (count (memo-prime-factor n))))
 
 (defn get-proper-divisors [n]
   (filter (fn [x] (> n x)) (map #(reduce * %) (product (get-powers-of-prime-factors n)))))
