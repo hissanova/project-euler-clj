@@ -180,7 +180,9 @@
 
 (defn is-prime?
   [n]
-  (= 1 (count (memo-prime-factor n))))
+  (let [prime-fac (memo-prime-factor n)]
+    (and (= 1 (count prime-fac))
+         (= 1 ((nth prime-fac 0) :exp)))))
 
 (defn get-proper-divisors [n]
   (filter (fn [x] (> n x)) (map #(reduce * %) (product (get-powers-of-prime-factors n)))))

@@ -118,21 +118,12 @@
                                    x))
                      (map-indexed vector (gen-candidates))))))
 
-;; (defn left-truncate
-;;   [digit-seq left-truncatables]
-;;   left-truncatables)
-
-;; (defn right-truncate
-;;   [digit-seq right-truncatables]
-;;   right-truncatables)
-
 (defn left-truncate
   [candidate left-truncatables]
   (loop [d-seq candidate
          primes #{}]
     (if (or (= 0 (count d-seq))
-            (and (contains? #{3 7} (first d-seq))
-                 (contains? left-truncatables d-seq)))
+            (contains? left-truncatables d-seq))
       (clojure.set/union left-truncatables primes)
       (if (not (common/is-prime? (common/digit-seq-to-num d-seq)))
         left-truncatables
@@ -144,8 +135,7 @@
   (loop [d-seq  candidate
          primes #{}]
     (if (or (= 0 (count d-seq))
-            (and (contains? #{3 7} (last d-seq))
-                 (contains? right-truncatables d-seq)))
+            (contains? right-truncatables d-seq))
       (clojure.set/union right-truncatables primes)
       (if (not (common/is-prime? (common/digit-seq-to-num d-seq)))
         right-truncatables
@@ -160,8 +150,10 @@
                [index
                 candidate]]
             (do (when (= (mod index 1000) 0)
-                  (println (format "%d evaluated." index)
-                           truncatables))
+                  (println (format "%d evaluated." index))
+                  (println (sort-by vec left-truncatables))
+                  (println (sort-by vec right-truncatables))
+                  (println truncatables))
                 (let [left-truncatables' (left-truncate candidate left-truncatables)
                       right-truncatables' (right-truncate candidate right-truncatables)]
                   [left-truncatables'
@@ -174,3 +166,36 @@
                      truncatables)])))
           [#{} #{} []]
           (map-indexed vector (gen-candidates))))
+
+
+(defn gen-left-truncatables
+  ([] (gen-left-truncatables '(3 7)))
+  ([left-truncatables]
+   (cons left-truncatables
+         (lazy-seq (gen-left-truncatables (filter #(common/is-prime? (common/digit-seq-to-num %))
+                                                  (map flatten
+                                                       (common/product [[1 2 3 5 7 9] left-truncatables]))))))))
+
+(defn gen-right-truncatables
+  ([] (gen-right-truncatables '(2 3 5 7)))
+  ([right-truncatables]
+   (cons right-truncatables
+         (lazy-seq (gen-right-truncatables (filter #(common/is-prime? (common/digit-seq-to-num %))
+                                                  (map flatten
+                                                       (common/product [right-truncatables [1 3 7 9]]))))))))
+
+(defn candidate-filter
+  [d-seq]
+  (not-any? #{2 5} d-seq))
+
+(def left-truncatable-candidates  (apply concat (take-while #(< 0 (count (filter candidate-filter %)))
+                                                            (rest (gen-left-truncatables)))))
+
+(def right-truncatable-candidates (apply concat (take-while #(< 0 (count (filter candidate-filter %)))
+                                                            (rest (gen-right-truncatables)))))
+
+
+(defn solve3
+  []
+  (reduce + (map common/digit-seq-to-num (clojure.set/intersection (set left-truncatable-candidates)
+                                                                   (set right-truncatable-candidates)))))
