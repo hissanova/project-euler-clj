@@ -15,11 +15,12 @@
 (defn num-of-digits-func*
   ([] (num-of-digits-func* 0 0))
   ([num-of-digits total-num]
-   (cons total-num (lazy-seq (num-of-digits-func* (inc num-of-digits)
-                                                  (+ total-num
-                                                     (* 9
-                                                        (inc num-of-digits)
-                                                        (pow 10 num-of-digits))))))))
+   (cons total-num
+         (lazy-seq (num-of-digits-func* (inc num-of-digits)
+                                        (+ total-num
+                                           (* 9
+                                              (inc num-of-digits)
+                                              (pow 10 num-of-digits))))))))
 
 (defn decimal-pos-to-digit-nums
   [deci-pos]

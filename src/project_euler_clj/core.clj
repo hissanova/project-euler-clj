@@ -1,4 +1,5 @@
 (ns project-euler-clj.core
+  (:require [project-euler-clj.common :as common])
   (:require [clojure.string :as st])
   (:gen-class))
 
@@ -10,9 +11,9 @@
 
 ;; (for [file-str (filter #(re-matches #"problem_(.*).clj" %) files)]
 ;;   (load-file (str "./src/project_euler_clj/" file-str)))
-(use '[project-euler-clj.common :as common])
-(require 'project-euler-clj.problem-13)
-(refer 'project-euler-clj.problem-13)
+(require 'project-euler-clj.problem-041)
+
+(map println (file-seq (clojure.java.io/file "./src/project_euler_clj")))
 
 (defn hello-world
   [x]
