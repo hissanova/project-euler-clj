@@ -24,7 +24,9 @@
 
 (defn solve
   []
-  (take 2 (filter #(and (= % (take-le-element (common/penta-seq) %))
-                        (= % (take-le-element (common/hexa-seq) %)))
-                  (common/tri-seq))))
+  (take 3 (filter identity
+                  (pmap #(and (= % (take-le-element (common/penta-seq) %))
+                              (= % (take-le-element (common/hexa-seq) %))
+                              %)
+                        (common/tri-seq)))))
 
