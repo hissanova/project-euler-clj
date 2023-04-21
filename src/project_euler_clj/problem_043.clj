@@ -96,7 +96,7 @@
 (def legal-d1234 (map (fn [d5678910] [(vec (remove (set d5678910) (range 10)))
                                       d5678910])
                       legal-d5678910))
-;; ([[0 1 4 6] [3 5 7 2 8 9]])
+
 (defn solve
   []
   (reduce +
