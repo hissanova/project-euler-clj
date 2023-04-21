@@ -1,5 +1,18 @@
 (ns project-euler-clj.common)
 
+(defmacro lazy-seq-gen
+  [init-term init-d d]
+  (let [func (gensym 'func)]
+    `(defn ~func
+       ([] (~func ~init-term ~init-d))
+       ([n# diff#] (cons n# (lazy-seq (~func (+ n# diff#)
+                                       (+ diff# ~d))))))))
+
+(def tri-seq (lazy-seq-gen 1 2 1))
+(def square-seq (lazy-seq-gen 1 3 2))
+(def penta-seq (lazy-seq-gen 1 4 3))
+(def hexa-seq (lazy-seq-gen 1 5 4))
+
 (defn gen-n-digits-nums
   [n]
   (range (int (Math/pow 10 (dec n)))

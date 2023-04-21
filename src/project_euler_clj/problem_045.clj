@@ -9,20 +9,14 @@
 ;; Find the next triangle number that is also pentagonal and hexagonal.
 
 (ns project-euler-clj.problem-045
-  (:require [project-euler-clj.common :as common])
+  (:require [project-euler-clj.common :as common ])
   (:require [clojure.set :as sets])
   (:require [clojure.math.combinatorics :as combo]))
 
-(defmacro lazy-seq-gen
-  [func init-term init-d d]
-  `(defn ~func
-     ([] (~func ~init-term ~init-d))
-     ([n# diff#] (cons n# (lazy-seq (~func (+ n# diff#)
-                                              (+ diff# ~d)))))))
 
-(take 10 ((lazy-seq-gen penta-seq 1 4 3)))
-(take 10 ((lazy-seq-gen hexa-seq 1 5 4)))
-(take 10 ((lazy-seq-gen hexa-seq 1 5 4)))
+(take 10 (common/tri-seq))
+(take 10 (common/penta-seq))
+(take 10 (common/hexa-seq))
 (defn take-le-element
   [sq n]
   (last (take-while #(>= n %)
@@ -30,7 +24,7 @@
 
 (defn solve
   []
-  (take 3 (filter #(and (= % (take-le-element ((lazy-seq-gen penta-seq 1 4 3)) %))
-                        (= % (take-le-element ((lazy-seq-gen hexa-seq 1 5 4)) %)))
-                  ((lazy-seq-gen tri-seq 1 4 3)))))
+  (take 2 (filter #(and (= % (take-le-element (common/penta-seq) %))
+                        (= % (take-le-element (common/hexa-seq) %)))
+                  (common/tri-seq))))
 
