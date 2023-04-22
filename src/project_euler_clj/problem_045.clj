@@ -9,9 +9,7 @@
 ;; Find the next triangle number that is also pentagonal and hexagonal.
 
 (ns project-euler-clj.problem-045
-  (:require [project-euler-clj.common :as common ])
-  (:require [clojure.set :as sets])
-  (:require [clojure.math.combinatorics :as combo]))
+  (:require [project-euler-clj.common :as common ]))
 
 
 (take 10 (common/tri-seq))
