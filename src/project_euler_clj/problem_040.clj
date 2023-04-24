@@ -8,9 +8,6 @@
 (ns project-euler-clj.problem-040
   (:require [project-euler-clj.common :as common]))
 
-(defn pow
-  [base p]
-  (reduce * (repeat p base)))
 
 (defn num-of-digits-func*
   ([] (num-of-digits-func* 0 0))
@@ -20,7 +17,7 @@
                                         (+ total-num
                                            (* 9
                                               (inc num-of-digits)
-                                              (pow 10 num-of-digits))))))))
+                                              (common/pow 10 num-of-digits))))))))
 
 (defn decimal-pos-to-digit-nums
   [deci-pos]
@@ -38,7 +35,7 @@
   (let [digit-nums (decimal-pos-to-digit-nums dec-pos)
         digits (count digit-nums)
         remain (- dec-pos (last digit-nums))]
-    [(+ (dec (pow 10 (dec digits)))
+    [(+ (dec (common/pow 10 (dec digits)))
         (int (Math/ceil (/ remain digits))))
      (additive-inverse-mod remain digits)]))
 

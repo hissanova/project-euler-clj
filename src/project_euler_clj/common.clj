@@ -1,5 +1,9 @@
 (ns project-euler-clj.common)
 
+(defn pow
+  [base p]
+  (reduce * (repeat p base)))
+
 (defmacro lazy-seq-gen
   [init-term init-d d]
   (let [func (gensym 'func)]
