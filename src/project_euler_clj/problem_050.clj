@@ -65,18 +65,18 @@
                                                     (slide-window w-size primes))))
                          (range min-window (inc (max-window-length limit primes))))))))
 
-(time (do (count (nth (last (solve 81 30000))
-                      0))))
+
 (defn- get-new-longest
   [longest-seq longest-length primes-so-far new-prime]
   (let [candidates (map (fn [len] (conj (vec (take-last len primes-so-far))
                                         new-prime))
                         (reverse (range longest-length
                                         (inc (count primes-so-far)))))
-        new-longest-seq (first (filter identity (map  (fn [sq] (let [sum' (apply + sq)]
-                                                                 (if (common/is-prime? sum')
-                                                                   [sq sum'])))
-                                                      candidates)))]
+        new-longest-seq (first (filter identity
+                                       (map  (fn [sq] (let [sum' (apply + sq)]
+                                                        (if (common/is-prime? sum')
+                                                          [sq sum'])))
+                                             candidates)))]
     (if (and (not-empty new-longest-seq)
              (<= longest-length
                  (count (first new-longest-seq))))
@@ -84,21 +84,20 @@
       [longest-seq longest-length])))
 
 (defn solve2 [limit]
-  (take-last 2 (let [primes (filter common/is-prime? (drop 2 (range)))]
-                 (loop [prime (first primes)
-                        remain (rest primes)
+  (take-last 2 (let []
+                 (loop [primes (filter common/is-prime? (drop 2 (range)))
                         primes-so-far []
                         longest-seq []
                         longest-length 0]
                    (if (and (not-empty longest-seq)
                             (< limit (last (last longest-seq))))
                      longest-seq
-                     (let [[new-longest-seq new-longest-length] (get-new-longest longest-seq
+                     (let [prime (first primes)
+                           [new-longest-seq new-longest-length] (get-new-longest longest-seq
                                                                                  longest-length
                                                                                  primes-so-far
                                                                                  prime)]
-                       (recur (first remain)
-                              (rest remain)
+                       (recur (rest primes)
                               (conj primes-so-far prime)
                               new-longest-seq
                               new-longest-length)))))))
