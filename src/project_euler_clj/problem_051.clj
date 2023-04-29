@@ -20,16 +20,25 @@
                                [(list 1 3 7 9)]))))
 (get-dig-seqs [0 2] 4)
 
+(defn replace-at
+  [coll positions v]
+  (reduce (fn [c pos]  (assoc c pos v))
+              coll
+              positions))
+(replace-at [0 1 1] [1] :x)
+
+(defn- partition-of-digits-except-last
+  [dig-num]
+  (apply concat
+         (map (fn [x] [x (reverse x)])
+              (combo/partitions (range (dec dig-num)) :min 2 :max 2))))
+
 (defn gen-candidates
   [dig-num]
   (apply concat
-         (map (fn [[indie-digs replace-digs]] (map (fn [seq] (reduce (fn [s p]  (assoc s p :x))
-                                                                     seq
-                                                                     replace-digs))
-                                                   (get-dig-seqs indie-digs dig-num)))
-              (apply concat
-                     (map (fn [x] [x (reverse x)])
-                          (combo/partitions (range (dec dig-num)) :min 2 :max 2))))))
+         (map (fn [[var-digs replace-pos]] (map (fn [seq] (replace-at seq replace-pos :x))
+                                                  (get-dig-seqs var-digs dig-num)))
+              (partition-of-digits-except-last dig-num))))
 
 (take 50 (gen-candidates 4))
 
