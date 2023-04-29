@@ -8,16 +8,21 @@
   (:require [project-euler-clj.common :as common])
   (:require [clojure.math.combinatorics :as combo]))
 
+(defn map-from-seq
+  [s1 s2]
+  (into {} (map vector s1 s2)))
+
 (defn- get-dig-seqs
-  [pos-sel total-digits]
-  (map (fn [digits] (replace (assoc (into {} (map vector pos-sel digits))
-                                    (dec total-digits) (last digits))
-                             (vec (range total-digits))))
+  [pos-selections total-digits]
+  (map (fn [digits] (replace (merge (map-from-seq pos-selections digits)
+                                    {(dec (count total-digits)) (last digits)})
+                             total-digits))
        (common/product (concat (map (fn [pos] (if (= 0 pos)
                                                 (range 1 10)
                                                 (range 10)))
-                                    pos-sel)
+                                    pos-selections)
                                [(list 1 3 7 9)]))))
+
 (get-dig-seqs [0 2] 4)
 
 (defn replace-at
@@ -27,18 +32,19 @@
               positions))
 (replace-at [0 1 1] [1] :x)
 
-(defn- partition-of-digits-except-last
+(defn- bipartition-of-digits
   [dig-num]
   (apply concat
          (map (fn [x] [x (reverse x)])
-              (combo/partitions (range (dec dig-num)) :min 2 :max 2))))
+              (combo/partitions (range dig-num) :min 2 :max 2))))
 
 (defn gen-candidates
   [dig-num]
   (apply concat
-         (map (fn [[var-digs replace-pos]] (map (fn [seq] (replace-at seq replace-pos :x))
-                                                  (get-dig-seqs var-digs dig-num)))
-              (partition-of-digits-except-last dig-num))))
+         (map (fn [[var-positions replace-pos]] (map (fn [seq] (replace-at seq replace-pos :x))
+                                                     (get-dig-seqs var-positions
+                                                                   (vec (range dig-num)))))
+              (bipartition-of-digits (dec dig-num)))))
 
 (take 50 (gen-candidates 4))
 
