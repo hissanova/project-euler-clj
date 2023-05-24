@@ -41,10 +41,10 @@
    (loop [current-num n
           digit-rep {:base base :body []}
           max-exp (if (= 0 current-num) current-num
-                      (int ((logn base) current-num)))]
+                      (bigint ((logn base) current-num)))]
      (if (= 0 max-exp)
        (add-new-digit digit-rep {:digit current-num :pow 0})
-       (let [current-power (int (Math/pow base max-exp))]
+       (let [current-power (bigint (Math/pow base max-exp))]
          (recur
           (mod current-num current-power)
           (add-new-digit digit-rep {:digit (quot current-num current-power)
@@ -58,7 +58,7 @@
 
 (defn digits-to-number
   [digits-rep]
-  (reduce + (map #(int (* (% :digit)
+  (reduce + (map #(bigint (* (% :digit)
                           (Math/pow (digits-rep :base)
                                     (% :pow))))
                  (digits-rep :body))))
@@ -214,3 +214,12 @@
 
 (defn is-abundant-number? [n]
   (< n (sum-proper-divisors n)))
+
+(defn reverse-n
+  [n]
+  (digit-seq-to-num (reverse (num-to-digit-seq n))))
+
+(defn palindrome?
+  [n]
+  (= n (reverse-n n)))
+
