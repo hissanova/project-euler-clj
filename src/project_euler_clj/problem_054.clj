@@ -94,17 +94,39 @@
 (map to-number (get-numbers (first (first games))))
 (get-suits (first (first games)))
 
-(defn- reduce-hand
+(defn reduce-hand
   [hand]
   [(reverse (sort (map to-number (get-numbers hand))))
    (set (get-suits hand))])
 
 (defn count-entries
   [coll]
-  (map #(count (filter #{%} coll)) (set coll)))
-
+  (map #(count (filter #{%} coll)) (sort coll)))
+(count-entries [1 2 3 4 5])
+(map (fn [x] [x ((comp count-entries first reduce-hand) x)])
+     (take 10 (apply concat games)))
 (reduce-hand (first (first games)))
-(count-entries (first (reduce-hand (first (first games)))))
+
+(defn get-k-v-seq
+  [nums]
+  (map vector
+       (count-entries nums)
+       (sort nums)))
+(get-k-v-seq [1 2 3 2 1])
+
+(defn group-by-num
+  [hand]
+  (let [red-hand (reduce-hand hand)
+        nums (first red-hand)]
+    (mapv (fn [[x sq]] [x (vec (reverse sq))])
+          (vec (reverse (into (sorted-map)
+                              (reduce (fn [m [k v]] (update m k #(if (some #{v} %) % (vec (conj % v)))))
+                                      {}
+                                      (get-k-v-seq nums))))))))
+
+(let [nums (first (reduce-hand (first (apply concat games))))]
+  (map vector (count-entries nums) nums))
+(map group-by-num (take 10 (apply concat games)))
 
 (defn how-many-pairs
   [hand]
@@ -134,8 +156,6 @@
              (first remain-sq)
              (rest remain-sq)
              (conj diff-seq (- next-term current-term))))))
-
-
 
 (defn straight?
   [hand]
@@ -171,9 +191,9 @@
 (defn get-rank
   [hand]
   (-> [hand :none]
-      (rewrite-if-true (fn [h] (= 1 (how-many-pairs h)))
+      (rewrite-if-true (fn [h] (= 1 (/ (how-many-pairs h) 2)))
                        :one-pair)
-      (rewrite-if-true (fn [h] (= 2 (how-many-pairs h)))
+      (rewrite-if-true (fn [h] (= 2 (/ (how-many-pairs h) 2)))
                        :two-pairs)
       (rewrite-if-true (fn [h] (any-triple? h))
                        :triple)
@@ -194,12 +214,14 @@
 (filter #(= :royal-flush (nth (get-rank %) 1))
         (apply concat games))
 
-(count
- (filter (fn [res] (apply = (map second res)))
+(defn solve []
+  (count
+   (filter (fn [[[h1 r1] [h2 r2]]] (if (= r1 r2)
+                                   (let [hands (map group-by-num [h1 h2])]
+                                  (= hands (sort hands)))
+                                (< r1 r2)))
          (map #(map (fn [h] [h
                              (.indexOf ranks
-                                       (nth (get-rank h) 1))])
+                                       (second (get-rank h)))])
                     %)
-              games)))
-
-(defn solve [])
+              games))))
