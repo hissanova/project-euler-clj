@@ -35,16 +35,18 @@
         (fn [x] (/ (Math/log x)
                    (Math/log n))))))
 
+;; There's a problem in handling big integers!!
 (defn num-to-digits
   ([n] (num-to-digits n 10))
   ([n base]
    (loop [current-num n
           digit-rep {:base base :body []}
-          max-exp (if (= 0 current-num) current-num
-                      (bigint ((logn base) current-num)))]
+          max-exp (if (= 0 current-num)
+                    current-num
+                    (bigint ((logn base) current-num)))]
      (if (= 0 max-exp)
        (add-new-digit digit-rep {:digit current-num :pow 0})
-       (let [current-power (bigint (Math/pow base max-exp))]
+       (let [current-power (bigint (pow base max-exp))]
          (recur
           (mod current-num current-power)
           (add-new-digit digit-rep {:digit (quot current-num current-power)
@@ -52,7 +54,8 @@
           (dec max-exp)))))))
 
 (defn num-to-digit-seq
-  ([n] (num-to-digit-seq n 10))
+  ([n] (map #(Integer/parseInt (str %))
+            (str n)))
   ([n base]
    (map :digit (:body (num-to-digits n base)))))
 
