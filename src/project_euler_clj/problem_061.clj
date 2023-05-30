@@ -55,16 +55,6 @@
                (map (fn [sq] (gen-cadidate-seq (sq)))
                     [common/tri-seq common/square-seq common/penta-seq])))
 
-(defn- is-cyclic?
-  [sq]
-  (let [n-sq (flatten (map (fn [n] (common/num-to-digit-seq n))
-                           (map second sq)))]
-    (every? true?
-            (map (fn [s] (apply = (partition 2 s)))
-                 (partition 4 (concat (drop 2 n-sq) (take 2 n-sq)))))))
-
-(is-cyclic? [[0 1234] [1 3456] [2 5612]])
-
 
 (def seqs [[:tri common/tri-seq]
            [:sqr common/square-seq]
@@ -87,18 +77,21 @@
                                                       (serialise-seq k s)))
                                      seqs))))
 
-(map-indexed vector [1 2 3])
+(defn- maybe-add
+  [sq old-names term]
+  (let [terms-sq-name (first term)]
+    (if (not (contains? old-names
+                        terms-sq-name))
+      (conj sq term))))
 
 (def candidates (loop [chains (map vector (serialise-seq :tri common/tri-seq))]
                   (if-let [loop-candidates (seq (filter #(= 6 (count %)) chains))]
                     loop-candidates
                     (recur (apply concat
                                   (map (fn [sq] (let [k (take-last 2 (last (last sq)))
-                                                      sq-names (set (map first sq))
+                                                      old-names (set (map first sq))
                                                       new-terms (dict k)]
-                                                  (map (fn [term] (if (not (contains? sq-names
-                                                                                      (first term)))
-                                                                    (conj sq term)))
+                                                  (map (fn [t] (maybe-add sq old-names t))
                                                        new-terms)))
                                        chains))))))
 
