@@ -16,6 +16,8 @@
 (def square-seq (lazy-seq-gen 1 3 2))
 (def penta-seq (lazy-seq-gen 1 4 3))
 (def hexa-seq (lazy-seq-gen 1 5 4))
+(def hepta-seq (lazy-seq-gen 1 6 5))
+(def octa-seq (lazy-seq-gen 1 7 6))
 
 (defn gen-n-digits-nums
   [n]
