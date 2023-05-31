@@ -47,22 +47,12 @@
                       (map-indexed vector
                                    lazy-poly-seq))))
 
-(count (gen-cadidate-seq (common/tri-seq)))
-(count (gen-cadidate-seq (common/square-seq)))
-(count (gen-cadidate-seq ((common/lazy-seq-gen 1 4 3))))
-
-(reduce * (map count
-               (map (fn [sq] (gen-cadidate-seq (sq)))
-                    [common/tri-seq common/square-seq common/penta-seq])))
-
-
 (def seqs [[:tri common/tri-seq]
            [:sqr common/square-seq]
            [:pen common/penta-seq]
            [:hex common/hexa-seq]
            [:hep common/hepta-seq]
            [:oct common/octa-seq]])
-
 
 (defn serialise-seq
   [k s]
