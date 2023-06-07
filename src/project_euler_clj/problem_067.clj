@@ -74,6 +74,8 @@
 ;; The correct solution starts from here.
 
 (defn duplicate-inbetweeners
+  "(a_0,a_1,...,a_k,...,a_{n-1},a_n)
+  -> (a_0,a_1,a_1,...,a_k,a_k...,a_{n-1},a_{n-1},a_n)"
   [sq]
   (let [len (count sq)]
     (cons (first sq)
@@ -81,13 +83,23 @@
                                 (drop 1 (take (dec len) sq))))
                   [(last sq)]))))
 
-(defn find-local-max-path
-  [upper-row lower-row]
-  (map #(apply max %)
-       (map (fn [n [m1 m2]] [(+ m1 n) (+ m2 n)])
-            lower-row (partition 2 (duplicate-inbetweeners upper-row)))))
+(defn dup-interior
+  [sq]
+  (cons (first sq)
+        (reverse (cons (last sq)
+                       (flatten (map (fn [x] (repeat 2 x))
+                                     (rest (reverse (rest sq)))))))))
 
-(find-local-max-path [1 2 3] [1 2])
+(defn find-local-max-sum
+  "(a_0,a_1,...,a_n,a_{n+1}), (b_0,b_1,...,b_n)
+  -> (c_0,...,c_n) where c_k = b_k + max{a_k,a_{k+1}}."
+  [upper-row lower-row]
+  (map +
+       lower-row
+       (map (fn [[n1 n2]] (max n1 n2))
+            (partition 2 (duplicate-inbetweeners upper-row)))))
+
+(find-local-max-sum [1 2 3 5] [1 2 4])
 
 (defn solve []
   (let [rev-triangle (reverse triangle)]
@@ -96,6 +108,6 @@
            remain (drop 2 rev-triangle)]
      (if (empty? lower-row)
        (first upper-row)
-       (recur (find-local-max-path upper-row lower-row)
+       (recur (find-local-max-sum upper-row lower-row)
               (first remain)
               (rest remain))))))
