@@ -27,7 +27,7 @@
 
 ;; NOTE: As there are only 16384 routes, it is possible to solve this problem by trying every route. However, Problem 67, is the same challenge with a triangle containing one-hundred rows; it cannot be solved by brute force, and requires a clever method! ;o)
 
-(ns project-euler-clj.problem-18
+(ns project-euler-clj.problem-018
   (:require [project-euler-clj.common :as common])
   (:require [clojure.string :as st]))
 

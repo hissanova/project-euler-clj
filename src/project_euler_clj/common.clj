@@ -228,3 +228,50 @@
   [n]
   (= n (reverse-n n)))
 
+(defn cont-frac-of-sqrt-n
+  [n]
+  (let [sqrt (Math/sqrt n)]
+    (loop [current-a (int sqrt)
+           current-b current-a
+           current-c 1
+           a-s []
+           init-abc []]
+      (let [
+            next-c (/ (- n (pow current-b 2))
+                      current-c)
+            next-a (int (quot (+ sqrt current-b)
+                              next-c))
+            next-b (- (* next-a next-c)
+                      current-b)]
+              (if (= init-abc [next-a next-b next-c] )
+                a-s
+                (recur next-a
+                       next-b
+                       next-c
+                       (conj a-s current-a)
+                       (if (= 1 (count a-s))
+                         [next-a next-b next-c]
+                         init-abc)))))))
+
+(defn lazy-continued-fraction
+  ([lazy-sq] (let [a0 (first lazy-sq)
+                   a1 (second lazy-sq)]
+               (lazy-continued-fraction [a0 1]
+                                        [(inc (* a0 a1)) a1]
+                                        (drop 2 lazy-sq))))
+  ([frac1 frac2 lazy-sq] (let [a (first lazy-sq)
+                               num1 (first frac1)
+                               num2 (first frac2)
+                               den1 (second frac1)
+                               den2 (second frac2)
+                               ]
+                           (cons frac1 (lazy-seq (lazy-continued-fraction frac2
+                                                                          [(+ (* a num2) num1)
+                                                                          (+ (* a den2) den1)]
+                                                                         (rest lazy-sq)))))))
+
+(defn reduce-cont-frac
+  [sq]
+  (if (= (count sq) 1)
+    (first sq)
+    (+ (first sq) (/ 1 (reduce-cont-frac (rest sq))))))

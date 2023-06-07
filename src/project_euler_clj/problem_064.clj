@@ -44,37 +44,10 @@
 (ns project-euler-clj.problem-064
   (:require [project-euler-clj.common :as common]))
 
-(defn cont-frac-of-sqrt-n
-  [n]
-  (let [sqrt (Math/sqrt n)]
-    (loop [current-a (int sqrt)
-           current-b current-a
-           current-c 1
-           a-s []
-           init-abc []]
-      (let [
-            next-c (/ (- n (common/pow current-b 2))
-                      current-c)
-            next-a (int (quot (+ sqrt current-b)
-                              next-c))
-            next-b (- (* next-a next-c)
-                      current-b)]
-              (if (= init-abc [next-a next-b next-c] )
-                a-s
-                (recur next-a
-                       next-b
-                       next-c
-                       (conj a-s current-a)
-                       (if (= 1 (count a-s))
-                         [next-a next-b next-c]
-                         init-abc)))))))
-
-(cont-frac-of-sqrt-n 2)
-
 (defn solve
   [] 
   (count (filter (fn [[n sq]] (odd? (dec (count sq))))
-                 (map (fn [n] [n (cont-frac-of-sqrt-n n)])
+                 (map (fn [n] [n (common/cont-frac-of-sqrt-n n)])
                       (filter #(not= % (common/pow (int (Math/sqrt %))
                                                    2))
                               (range 2 10001))))))

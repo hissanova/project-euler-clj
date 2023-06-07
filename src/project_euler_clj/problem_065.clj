@@ -21,22 +21,6 @@
 (ns project-euler-clj.problem-065
   (:require [project-euler-clj.common :as common]))
 
-(defn lazy-continued-fraction
-  ([lazy-sq] (let [a0 (first lazy-sq)
-                   a1 (second lazy-sq)]
-               (lazy-continued-fraction [a0 1]
-                                        [(inc (* a0 a1)) a1]
-                                        (drop 2 lazy-sq))))
-  ([frac1 frac2 lazy-sq] (let [a (first lazy-sq)
-                               num1 (first frac1)
-                               num2 (first frac2)
-                               den1 (second frac1)
-                               den2 (second frac2)
-                               ]
-                           (cons frac1 (lazy-seq (lazy-continued-fraction frac2
-                                                                         [(+ (* a num2) num1)
-                                                                          (+ (* a den2) den1)]
-                                                                         (rest lazy-sq)))))))
 
 (defn napier-cfrac-coeff-gen
   ([] (napier-cfrac-coeff-gen 1N))
@@ -55,5 +39,5 @@
            (first
             (last
              (take 100
-                   (lazy-continued-fraction
+                   (common/lazy-continued-fraction
                     (napier-cfrac-coeff-gen))))))))
