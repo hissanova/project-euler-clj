@@ -275,3 +275,14 @@
   (if (= (count sq) 1)
     (first sq)
     (+ (first sq) (/ 1 (reduce-cont-frac (rest sq))))))
+
+(defn phi-for-p
+  [p k]
+  (* (pow p (dec k))
+     (dec p)))
+
+(defn phi
+  [n]
+  (reduce * (map (fn [fac] (phi-for-p (:factor fac)
+                                      (:exp fac)))
+                 (prime-factor n))))
