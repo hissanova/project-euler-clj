@@ -29,8 +29,6 @@
   ([n condition]
    (take-while #(condition %) (get-coprimes-upto n))))
 
-(get-coprimes-upto 50000 (fn [x] (> 90000 (+ x 50000))))
-
 (defn triple
   [m n]
   (let [m-sqrd (* m m)
@@ -40,36 +38,38 @@
      (+ m-sqrd n-sqrd)]))
 
 
-(map (fn [n] (map (fn [m] [[m n] (triple m n) (* 2 (* n (+ m n)))])
-                  (get-coprimes-upto n (fn [x] (> limit (+ x n))))))
-     (range 1 limit))
+(defn get-triples-upto-sum-limit
+  [m n sum-limit]
+  (let [dt (triple m n)
+        ds (reduce + dt)]
+    (take-while (fn [x] (>= sum-limit (first x)))
+                (iterate (fn [[s t]] [(+ s ds)
+                                      (map + t dt)])
+                         [ds dt]))))
 
-(let [s 12
-      t [3 4 5]]
-  (take 10 (iterate (fn [[ss tt]] [(+ ss s)
-                                   (map + t tt)])
-                    [s t])))
-
-(defn solve [sum-limit]
+(defn calculate-sum-to-triples-map
+  [sum-limit]
   (let [gen-limit (int (Math/sqrt (inc (/ sum-limit 2))))]
     (loop [m 1
            ns (get-coprimes-upto m)
-           triples {}]
+           triple-map {}]
       (if (= gen-limit m)
-        triples
+        triple-map
         (recur (inc m)
                (get-coprimes-upto (inc m))
-               (reduce (fn [triples-map [sum t]]
-                         (update triples-map
+               (reduce (fn [t-map [sum t]]
+                         (update t-map
                                  sum
                                  (fnil #(clojure.set/union % #{(sort t)})
                                        #{})))
-                       triples
+                       triple-map
                        (apply concat
-                              (map (fn [n] (let [triple (triple m n)
-                                                 s (reduce + triple)]
-                                             (take-while (fn [x] (>= sum-limit (first x)))
-                                                         (iterate (fn [[ss tt]] [(+ s ss)
-                                                                                 (map + triple tt)])
-                                                                  [s triple]))))
+                              (map #(get-triples-upto-sum-limit m % sum-limit)
                                    ns))))))))
+
+(defn solve
+  [sum-limit]
+  (count
+   (filter (fn [x] (= 1 (count (second x))))
+           (into (sorted-map)
+                 (calculate-sum-to-triples-map sum-limit)))))
