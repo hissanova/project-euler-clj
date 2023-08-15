@@ -22,7 +22,6 @@
   (let [f (/ m n)]
     (= m (numerator f))))
 
-
 (defn get-coprimes-upto
   ([n]
    (filter #(coprime? % n) (range 1 n)))
@@ -34,9 +33,8 @@
   (let [m-sqrd (* m m)
         n-sqrd (* n n)]
     [(Math/abs (- m-sqrd n-sqrd))
-     (* 2 (* m n))
+     (* 2 m n)
      (+ m-sqrd n-sqrd)]))
-
 
 (defn get-triples-upto-sum-limit
   [m n sum-limit]
